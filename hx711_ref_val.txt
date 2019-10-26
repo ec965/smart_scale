@@ -1,0 +1,6 @@
+screw driver: 22g: -6251.222 ref val: -284.14
+pi with case: 87g:
+wire cutter: 62g: -17250.22 ref val: -278.23
+
+final ref val: -278
+
