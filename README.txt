@@ -11,11 +11,19 @@ Fruit Calorie Dictionary
 Fruits: apple, banana, orange to start
 
 Food Nutrition API (Nutritionix)
-1. API request: search by object name
+1. API GET request: search by object name
     > https://api.nutritionix.com/v1_1/search/{name_of_object}?results={min_results}%3A{max_results}&fields=item_id%2Citem_name&appId={id}}&appKey={key}
 2. Get item_id
-3. API request: get nutrition information by item_id
+3. API GET request: get nutrition information by item_id
     > https://api.nutritionix.com/v1_1/item?id={item_id}&appId&appId={id}}&appKey={key}
+
+Food Nutrition API (USDA)
+1. API POST request: search by object name
+    > https://api.nal.usda.gov/fdc/v1/search?api_key={key}
+2. Get fdcId
+3. API GET request: get nutrition information by fdcId
+    > https://api.nal.usda.gov/fdc/v1/{id}?api_key={key}
+4. Get calories value by getting foodNutrients id 1008
 
 Food scale hardware
 1. be able to tare scale using button
