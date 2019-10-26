@@ -1,18 +1,10 @@
 #Enoch Chau 2019
 #SD HACKS
-# import multitasking
-# import signal
 import time
 import sys
 import RPi.GPIO as GPIO
 from hx711 import HX711
 import Adafruit_CharLCD as LCD
-
-# kill all tasks on ctrl-c
-# signal.signal(signal.SIGINT, multitasking.killall)
-
-# or, wait for task to finish on ctrl-c:
-# signal.signal(signal.SIGINT, multitasking.wait_for_tasks)
 
 # Raspberry Pi pin configuration:
 lcd_rs = 25
@@ -43,20 +35,6 @@ def cleanAndExit():
     print("Bye!")
     sys.exit()
 
-# @multitasking.task
-def tare_button(button_pin, hx):
-    if GPIO.input(button_pin) == GPIO.HIGH:
-        print("tare button pushed")
-        hx.tare()
-
-# @multitasking.task
-def get_weight(hx, lcd):
-    val = hx.get_weight(5)
-    val = round(val)
-    print(str(val) + " g")
-    lcd.clear()
-    lcd.message(str(val) + " g")
-
 if __name__ == "__main__":
     # Initialize the LCD using the pins above.
     lcd = LCD.Adafruit_CharLCD(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7,
@@ -75,10 +53,6 @@ if __name__ == "__main__":
     GPIO.setup(button_pin2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
     print("Tare done! Add weight now...")
-
-    # to use both channels, you'll need to tare them both
-    #hx.tare_A()
-    #hx.tare_B()
 
     while True:
         try:
