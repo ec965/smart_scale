@@ -10,6 +10,13 @@ https://www.dexterindustries.com/howto/use-google-cloud-vision-on-the-raspberry-
 Fruit Calorie Dictionary
 Fruits: apple, banana, orange to start
 
+Food Nutrition API (Nutritionix)
+1. API request: search by object name
+    > https://api.nutritionix.com/v1_1/search/{name_of_object}?results={min_results}%3A{max_results}&fields=item_id%2Citem_name&appId={id}}&appKey={key}
+2. Get item_id
+3. API request: get nutrition information by item_id
+    > https://api.nutritionix.com/v1_1/item?id={item_id}&appId&appId={id}}&appKey={key}
+
 Food scale hardware
 1. be able to tare scale using button
 2. set up LED to blink when scale is done processing calories
@@ -25,4 +32,3 @@ Algorithm
 Reach Goals
 1. Implement a database to collect caloric data.
 2. implement user facing android app or website that can record calories.
-

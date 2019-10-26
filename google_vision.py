@@ -1,0 +1,4 @@
+import picamera
+
+def main():
+    
