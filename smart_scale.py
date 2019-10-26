@@ -4,22 +4,12 @@ import time
 import sys
 import RPi.GPIO as GPIO
 from hx711 import HX711
-import Adafruit_CharLCD as LCD
+from RPLCD.gpio import CharLCD
 
-# Raspberry Pi pin configuration:
-lcd_rs = 25
-lcd_en = 24
-lcd_d4 = 23
-lcd_d5 = 17
-lcd_d6 = 18
-lcd_d7 = 22
-lcd_backlight = 4
-lcd_columns = 16
-lcd_rows = 2
-
-# Define LCD column and row size for 16x2 LCD.
-lcd_columns = 16
-lcd_rows    = 2
+import multitasking
+import signal
+# kill all tasks on ctrl-c
+signal.signal(signal.SIGINT, multitasking.killall)
 
 #hx711 reference value
 referenceUnit = -278
@@ -35,10 +25,20 @@ def cleanAndExit():
     print("Bye!")
     sys.exit()
 
+@multitasking.task
+def tare_button(hx, lcd):
+    if GPIO.input(button_pin) == GPIO.HIGH:
+        print("tare button pushed")
+        hx.tare()
+        lcd.clear()
+        lcd.write_string("0 g")
+        hx.power_down()
+        hx.power_up()
+        time.sleep(0.1)
+
 if __name__ == "__main__":
     # Initialize the LCD using the pins above.
-    lcd = LCD.Adafruit_CharLCD(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7,
-                               lcd_columns, lcd_rows, lcd_backlight)
+    lcd = CharLCD(pin_rs = 25, pin_rw = None, pin_e = 24, pins_data = [23,17,18,22], numbering_mode = GPIO.BCM, cols=16, rows=2, dotsize=8)
 
     #init hx711
     hx = HX711(5, 6)#DT to 5, SCK to 6
@@ -56,21 +56,18 @@ if __name__ == "__main__":
 
     while True:
         try:
-            if GPIO.input(button_pin) == GPIO.HIGH:
-                print("tare button pushed")
-                hx.tare()
-                lcd.clear()
-                lcd.message("0 g")
-            if GPIO.input(button_pin2) == GPIO.HIGH:
-                val = hx.get_weight(5)
-                val = round(val)
-                print(str(val) + " g")
-                lcd.clear()
-                lcd.message(str(val) + " g")
-
+            tare_button(hx, lcd)
+            # if GPIO.input(button_pin2) == GPIO.HIGH:
+            val = hx.get_weight(5)
+            val = round(val,2)
+            print(str(val) + " g")
+            lcd.clear()
+            lcd.write_string(str(val) + " g")
             hx.power_down()
             hx.power_up()
             time.sleep(0.1)
+
+
 
         except (KeyboardInterrupt, SystemExit):
             cleanAndExit()
