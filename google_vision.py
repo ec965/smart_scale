@@ -8,11 +8,13 @@ https://cloud.google.com/vision/docs/quickstart-client-libraries#client-librarie
 import picamera
 
 from google.cloud import vision
+import os
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/pi/smartscale2-ba90efe132f7.json"
 
 client = vision.ImageAnnotatorClient()
 
 def takephoto():
-    camera = picamera.Picamera()
+    camera = picamera.PiCamera()
     camera.capture('image.jpg')
 
 def main():
@@ -25,7 +27,10 @@ def main():
 
     response = client.label_detection(image)
     labels = response.label_annotations
-
     print('Labels: ')
     for label in labels:
         print(label.description)
+    return labels
+
+if __name__ == "__main__":
+    main()
