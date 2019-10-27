@@ -77,6 +77,15 @@ def get_cal(hx, lock, lcd, run_event):
     while run_event.is_set():
         if GPIO.input(button_pin2) == GPIO.HIGH:
             lock.acquire()
+            #get weight
+            weight = hx.get_weight(5)
+            weight = round(val,2)
+            hx.power_down()
+            hx.power_up()
+
+            lcd.write_string(str(weight) + " g")
+            lcd.crlf()
+            lcd.write_string("Processing..")
             #get labels from google vision
             print("taking photo")
             labels = google_vision.main()
@@ -84,17 +93,13 @@ def get_cal(hx, lock, lcd, run_event):
 
             #IFTT call to post to google sheet and ios health app
             food =  _get_food_name(labels)
-            #get weight
-            weight = hx.get_weight(5)
-            weight = round(val,2)
-            hx.power_down()
-            hx.power_up()
+
             #calculate calories
             calories = round(_get_total_calories(food, weight),2)
             print("food: ")
             print(labels)
             print("weight (g): {}".format(weight))
-            print("calores (kcal): {}".format(calories))
+            print("calories (kcal): {}".format(calories))
             sheet_r = requests.post('https://maker.ifttt.com/trigger/calorie_get/with/key/ceLI0vmThKLzD52zpCCPjw', params={"value1":food ,"value2":weight,"value3":calories})
             health_app_r = requests.post('https://maker.ifttt.com/trigger/ios_health_cal/with/key/ceLI0vmThKLzD52zpCCPjw', params={"value1":str(calories) ,"value2":food})
             lcd.clear()

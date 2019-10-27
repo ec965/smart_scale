@@ -15,13 +15,14 @@ client = vision.ImageAnnotatorClient()
 
 def takephoto():
     camera = picamera.PiCamera()
-    camera.capture('image.jpg')
+    camera.image_effect = 'colorbalance'
+    camera.capture('scale_img.jpg')
     camera.close()
 
 def main():
     takephoto()
 
-    with open('image.jpg', 'rb') as image_file:
+    with open('scale_img.jpg', 'rb') as image_file:
         content = image_file.read()
 
     image = vision.types.Image(content=content)
@@ -34,4 +35,4 @@ def main():
     return labels
 
 if __name__ == "__main__":
-    main()
+    print(main())
