@@ -19,7 +19,7 @@ import usda_api
 # Hardcoded food id's with their names for demo purposes only
 COMMON_FRUITS = {
     ('apple', 'gala apple', 'fuji apple', 'apples', 'gala apples', 'fuji apples') : '341508',
-    ('orange', 'oranges') : '169919',
+    ('orange', 'oranges') : '169097',
     ('tangerine', 'clementine', 'mandarin orange', 'tangerines', 'clementines', 'mandarin oranges') : '169105',
     ('banana', 'bananas') : '173944',
     ('lemon', 'lemons') : '167746',
@@ -82,31 +82,38 @@ def get_cal(hx, lock, lcd, run_event):
             weight = round(val,2)
             hx.power_down()
             hx.power_up()
-
+            lcd.clear()
             lcd.write_string(str(weight) + " g")
             lcd.crlf()
-            lcd.write_string("Processing..")
+            lcd.write_string("Processing...")
             #get labels from google vision
             print("taking photo")
             labels = google_vision.main()
             print("photo done")
 
             #IFTT call to post to google sheet and ios health app
-            food =  _get_food_name(labels)
+            food = _get_food_name(labels)
 
             #calculate calories
-            calories = round(_get_total_calories(food, weight),2)
-            print("food: ")
-            print(labels)
-            print("weight (g): {}".format(weight))
-            print("calories (kcal): {}".format(calories))
-            sheet_r = requests.post('https://maker.ifttt.com/trigger/calorie_get/with/key/ceLI0vmThKLzD52zpCCPjw', params={"value1":food ,"value2":weight,"value3":calories})
-            health_app_r = requests.post('https://maker.ifttt.com/trigger/ios_health_cal/with/key/ceLI0vmThKLzD52zpCCPjw', params={"value1":str(calories) ,"value2":food})
-            lcd.clear()
-            lcd.write_string(str(weight) + " g; " + str(food))
-            lcd.crlf()
-            lcd.write_string(str(calories) + " kcal")
-            time.sleep(8)
+            if food == "":
+                print("could not find food name in database")
+                lcd.clear()
+                lcd.write_string(str(weight) + " g")
+                lcd.crlf()
+                lcd.write_string("error!")
+            elif food != "":
+                calories = round(_get_total_calories(food, weight),2)
+                print("food: ")
+                print(labels)
+                print("weight (g): {}".format(weight))
+                print("calories (kcal): {}".format(calories))
+                sheet_r = requests.post('https://maker.ifttt.com/trigger/calorie_get/with/key/ceLI0vmThKLzD52zpCCPjw', params={"value1":food ,"value2":weight,"value3":calories})
+                health_app_r = requests.post('https://maker.ifttt.com/trigger/ios_health_cal/with/key/ceLI0vmThKLzD52zpCCPjw', params={"value1":str(calories) ,"value2":food})
+                lcd.clear()
+                lcd.write_string(str(weight) + " g; " + str(food))
+                lcd.crlf()
+                lcd.write_string(str(calories) + " kcal")
+                time.sleep(8)
             lock.release()
             time.sleep(1)
 
@@ -115,10 +122,15 @@ def _get_food_name(labels: list) -> str:
     fruits = tuple(COMMON_FRUITS.keys())
     fruits = sum(fruits, ())
     for label in labels:
-        fruit_name = labels.description
-        fruit_name = fruit_name.lower()
-        if fruit_name in fruits:
-            return fruit_name
+        try:
+            fruit_name = label.description
+            fruit_name = fruit_name.lower()
+            if fruit_name in fruits:
+                return fruit_name
+        except:
+            fruit_name = ""
+    return fruit_name
+
 
 def _get_total_calories(food:str, weight:float) -> float:
     global COMMON_FRUITS
