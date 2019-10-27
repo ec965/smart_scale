@@ -18,16 +18,16 @@ import usda_api
 
 # Hardcoded food id's with their names for demo purposes only
 COMMON_FRUITS = {
-    {'apple', 'gala apple', 'fuji apple', 'apples', 'gala apples', 'fuji apples'} : '341508',
-    {'orange', 'oranges'} : '169919',
-    {'tangerine', 'clementine', 'mandarin orange', 'tangerines', 'clementines', 'mandarin oranges'} : '169105',
-    {'banana', 'bananas'} : '173944',
-    {'lemon', 'lemons'} : '167746',
-    {'pear', 'pears'} : '169118',
-    {'blueberry', 'blueberries'} : '171711',
-    {'strawberry', 'strawberries'} : '341668',
-    {'apricot', 'apricots'} : '171697',
-    {'grapefruit', 'grapefruits'} : '341423'
+    ('apple', 'gala apple', 'fuji apple', 'apples', 'gala apples', 'fuji apples') : '341508',
+    ('orange', 'oranges') : '169919',
+    ('tangerine', 'clementine', 'mandarin orange', 'tangerines', 'clementines', 'mandarin oranges') : '169105',
+    ('banana', 'bananas') : '173944',
+    ('lemon', 'lemons') : '167746',
+    ('pear', 'pears') : '169118',
+    ('blueberry', 'blueberries') : '171711',
+    ('strawberry', 'strawberries'): '341668',
+    ('apricot', 'apricots') : '171697',
+    ('grapefruit', 'grapefruits') : '341423'
 }
 
 #hx711 reference value
@@ -39,7 +39,7 @@ button_pin2 = 7 #GPIO7
 
 val = 0
 
-def tare_task(hx,lock,run_event):
+def tare_task(hx, lock, run_event):
     #init tare button
     GPIO.setup(button_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     while run_event.is_set():
@@ -51,7 +51,7 @@ def tare_task(hx,lock,run_event):
             hx.power_up()
             lock.release()
 
-def weigh_task(hx, lcd,run_event):
+def weigh_task(hx, lock, lcd, run_event):
     global val
     while run_event.is_set():
         lock.acquire()
@@ -68,10 +68,11 @@ def weigh_task(hx, lcd,run_event):
         lock.release()
         time.sleep(0.1)
 
-def get_cal(hx, lcd, run_event):
-    #init capture button
+def get_cal(hx, lock, lcd, run_event):
+    #init capture buttons
     GPIO.setup(button_pin2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     global val
+    global COMMON_FRUITS
     while run_event.is_set():
         if GPIO.input(button_pin2) == GPIO.HIGH:
             lock.acquire()
@@ -81,7 +82,7 @@ def get_cal(hx, lcd, run_event):
             print("photo done")
 
             #IFTT call to post to google sheet and ios health app
-            food = "apple"
+            food = "tangerine"
             weight = val
             calories = _get_total_calories(food, weight)
             print("food: ")
@@ -94,6 +95,7 @@ def get_cal(hx, lcd, run_event):
 
 # HELPER FUNCTIONS
 def _get_total_calories(food:str, weight:float) -> float:
+    global COMMON_FRUITS
     food_id = _get_food_id(food)
     search_url = usda_api.build_search_by_item_id_url(food_id)
     result = usda_api.get_result(search_url)
@@ -124,8 +126,8 @@ if __name__ == "__main__":
     run_event.set()
     # creating threads
     t1 = threading.Thread(target=tare_task, args=(hx,lock,run_event))
-    t2 = threading.Thread(target=weigh_task, args=(hx,lcd,run_event))
-    t3 = threading.Thread(target=get_cal, args=(hx,lcd,run_event))
+    t2 = threading.Thread(target=weigh_task, args=(hx,lock,lcd,run_event))
+    t3 = threading.Thread(target=get_cal, args=(hx,lock,lcd,run_event))
     t1.start()
     t2.start()
     t3.start()
