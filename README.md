@@ -40,3 +40,6 @@ Fruits: apple, banana, orange to start
 # Reach Goals
 1. Implement a database to collect caloric data.
 2. implement user facing android app or website that can record calories.
+
+Enoch Chau and Rebecca Leung
+SD Hacks 2019
