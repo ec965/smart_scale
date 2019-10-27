@@ -16,12 +16,15 @@ def build_search_by_item_id_url(item_id: str) -> str:
     return BASE_USDA_URL + '/{}?api_key={}'.format(item_id, API_KEY)
 
 # Rebecca To do: Fix the 403 forbidden error -> API key?
-# def search_by_name(search_query):
-#     query_parameters = {'api_key' : API_KEY, 'generalSearchInput' : search_query, 'requireAllWords': 'true'}
+# def get_search_by_name(search_query: str) -> dict:
+#     query_parameters = {'generalSearchInput' : search_query, 'requireAllWords': 'true','api_key' : API_KEY}
 #     query_parameters = parse.urlencode(query_parameters).encode()
-#     req = request.Request(BASE_USDA_URL + '/search?', data=query_parameters)
-#     response = request.urlopen(req)
-#     return response
+#     response = None
+#     try:
+#         req = request.Request(BASE_USDA_URL + '/search?api_key=' + API_KEY, data=query_parameters)
+#         response = request.urlopen(req)
+#         json_text = response.read().decode(encoding = 'utf-8')
+#         return json.loads(json_text)
 #
 # def get_item_id(search_query: str) -> str:
 #     return

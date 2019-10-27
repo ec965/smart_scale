@@ -13,6 +13,23 @@ import requests
 #threading
 import threading
 
+#API calling
+import usda_api
+
+# Hardcoded food id's with their names for demo purposes only
+COMMON_FRUITS = {
+    {'apple', 'gala apple', 'fuji apple', 'apples', 'gala apples', 'fuji apples'} : '341508',
+    {'orange', 'oranges'} : '169919',
+    {'tangerine', 'clementine', 'mandarin orange', 'tangerines', 'clementines', 'mandarin oranges'} : '169105',
+    {'banana', 'bananas'} : '173944',
+    {'lemon', 'lemons'} : '167746',
+    {'pear', 'pears'} : '169118',
+    {'blueberry', 'blueberries'} : '171711',
+    {'strawberry', 'strawberries'} : '341668',
+    {'apricot', 'apricots'} : '171697',
+    {'grapefruit', 'grapefruits'} : '341423'
+}
+
 #hx711 reference value
 referenceUnit = -278
 
@@ -66,7 +83,7 @@ def get_cal(hx, lcd, run_event):
             #IFTT call to post to google sheet and ios health app
             food = "apple"
             weight = val
-            calories = val*2.0
+            calories = _get_total_calories(food, weight)
             print("food: ")
             print(labels)
             print("weight (g): {}".format(weight))
@@ -74,6 +91,19 @@ def get_cal(hx, lcd, run_event):
             sheet_r = requests.post('https://maker.ifttt.com/trigger/calorie_get/with/key/ceLI0vmThKLzD52zpCCPjw', params={"value1":food ,"value2":weight,"value3":calories})
             health_app_r = requests.post('https://maker.ifttt.com/trigger/ios_health_cal/with/key/ceLI0vmThKLzD52zpCCPjw', params={"value1":str(calories) ,"value2":food})
             lock.release()
+
+# HELPER FUNCTIONS
+def _get_total_calories(food:str, weight:float) -> float:
+    food_id = _get_food_id(food)
+    search_url = usda_api.build_search_by_item_id_url(food_id)
+    result = usda_api.get_result(search_url)
+    calories = usda_api.get_calories_per_gram(result) * weight
+    return calories
+
+def _get_food_id(food:str) -> str:
+    for k, v in COMMON_FRUITS.items():
+        if food in k:
+            return v
 
 if __name__ == "__main__":
     # Initialize the LCD using the pins above.
