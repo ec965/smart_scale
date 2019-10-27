@@ -82,7 +82,7 @@ def get_cal(hx, lock, lcd, run_event):
             print("photo done")
 
             #IFTT call to post to google sheet and ios health app
-            food = "tangerine"
+            food = _get_food_name(labels)
             weight = val
             calories = _get_total_calories(food, weight)
             print("food: ")
@@ -94,6 +94,15 @@ def get_cal(hx, lock, lcd, run_event):
             lock.release()
 
 # HELPER FUNCTIONS
+def _get_food_name(labels: list) -> str:
+    fruits = tuple(COMMON_FRUITS.keys())
+    fruits = sum(fruits, ())
+    for label in labels:
+        fruit_name = labels.description
+        fruit_name = fruit_name.lower()
+        if fruit_name in fruits:
+            return fruit_name
+
 def _get_total_calories(food:str, weight:float) -> float:
     global COMMON_FRUITS
     food_id = _get_food_id(food)
