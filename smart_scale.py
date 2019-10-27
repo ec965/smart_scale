@@ -59,7 +59,9 @@ def get_cal(hx, lcd, run_event):
         if GPIO.input(button_pin2) == GPIO.HIGH:
             lock.acquire()
             #get labels from google vision
+            print("taking photo")
             labels = google_vision.main()
+            print("photo done")
 
             #IFTT call to post to google sheet and ios health app
             food = "apple"
@@ -68,9 +70,9 @@ def get_cal(hx, lcd, run_event):
             print("food: ")
             print(labels)
             print("weight (g): {}".format(weight))
-            print("calores (kcal): {}".format(calories))        
-            # sheet_r = requests.post('https://maker.ifttt.com/trigger/calorie_get/with/key/ceLI0vmThKLzD52zpCCPjw', params={"value1":food ,"value2":weight,"value3":calories})
-            # health_app_r = request.post('https://maker.ifttt.com/trigger/ios_health_cal/with/key/ceLI0vmThKLzD52zpCCPjw', params={"value1":food ,"value2":calories})
+            print("calores (kcal): {}".format(calories))
+            sheet_r = requests.post('https://maker.ifttt.com/trigger/calorie_get/with/key/ceLI0vmThKLzD52zpCCPjw', params={"value1":food ,"value2":weight,"value3":calories})
+            health_app_r = requests.post('https://maker.ifttt.com/trigger/ios_health_cal/with/key/ceLI0vmThKLzD52zpCCPjw', params={"value1":str(calories) ,"value2":food})
             lock.release()
 
 if __name__ == "__main__":
