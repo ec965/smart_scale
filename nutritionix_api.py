@@ -9,8 +9,8 @@ import json
 import urllib.parse
 import urllib.request
 
-APP_ID = '761dd21b'
-APP_KEY = 'f00d105675f4567415031908caa55463'
+APP_ID = ''
+APP_KEY = ''
 
 BASE_NUTRITIONIX_URL = 'https://api.nutritionix.com/v1_1'
 
