@@ -13,6 +13,23 @@ import requests
 #threading
 import threading
 
+#API calling
+import usda_api
+
+# Hardcoded food id's with their names for demo purposes only
+COMMON_FRUITS = {
+    {'apple', 'gala apple', 'fuji apple', 'apples', 'gala apples', 'fuji apples'} : '341508',
+    {'orange', 'oranges'} : '169919',
+    {'tangerine', 'clementine', 'mandarin orange', 'tangerines', 'clementines', 'mandarin oranges'} : '169105',
+    {'banana', 'bananas'} : '173944',
+    {'lemon', 'lemons'} : '167746',
+    {'pear', 'pears'} : '169118',
+    {'blueberry', 'blueberries'} : '171711',
+    {'strawberry', 'strawberries'} : '341668',
+    {'apricot', 'apricots'} : '171697',
+    {'grapefruit', 'grapefruits'} : '341423'
+}
+
 #hx711 reference value
 referenceUnit = -278
 
@@ -64,11 +81,12 @@ def get_cal(hx, lcd, run_event):
             #IFTT call to post to google sheet and ios health app
             food = "apple"
             weight = val
-            calories = val*2.0
+            search_url = usda_api.build_search_by_item_id_url(COMMON_FRUITS[food])
+            calories =
             print("food: ")
             print(labels)
             print("weight (g): {}".format(weight))
-            print("calores (kcal): {}".format(calories))        
+            print("calores (kcal): {}".format(calories))
             # sheet_r = requests.post('https://maker.ifttt.com/trigger/calorie_get/with/key/ceLI0vmThKLzD52zpCCPjw', params={"value1":food ,"value2":weight,"value3":calories})
             # health_app_r = request.post('https://maker.ifttt.com/trigger/ios_health_cal/with/key/ceLI0vmThKLzD52zpCCPjw', params={"value1":food ,"value2":calories})
             lock.release()
