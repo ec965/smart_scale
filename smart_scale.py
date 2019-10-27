@@ -50,6 +50,7 @@ def tare_task(hx, lock, run_event):
             hx.power_down()
             hx.power_up()
             lock.release()
+            time.sleep(1)
 
 def weigh_task(hx, lock, lcd, run_event):
     global val
@@ -66,7 +67,7 @@ def weigh_task(hx, lock, lcd, run_event):
         hx.power_down()
         hx.power_up()
         lock.release()
-        time.sleep(0.1)
+        time.sleep(0.5)
 
 def get_cal(hx, lock, lcd, run_event):
     #init capture buttons
@@ -82,16 +83,27 @@ def get_cal(hx, lock, lcd, run_event):
             print("photo done")
 
             #IFTT call to post to google sheet and ios health app
-            food = "tangerine"
-            weight = val
-            calories = _get_total_calories(food, weight)
+            food = "apple"
+            #get weight
+            weight = hx.get_weight(5)
+            weight = round(val,2)
+            hx.power_down()
+            hx.power_up()
+            #calculate calories
+            calories = round(_get_total_calories(food, weight),2)
             print("food: ")
             print(labels)
             print("weight (g): {}".format(weight))
             print("calores (kcal): {}".format(calories))
             sheet_r = requests.post('https://maker.ifttt.com/trigger/calorie_get/with/key/ceLI0vmThKLzD52zpCCPjw', params={"value1":food ,"value2":weight,"value3":calories})
             health_app_r = requests.post('https://maker.ifttt.com/trigger/ios_health_cal/with/key/ceLI0vmThKLzD52zpCCPjw', params={"value1":str(calories) ,"value2":food})
+            lcd.clear()
+            lcd.write_string(str(weight) + " g; " + str(food))
+            lcd.crlf()
+            lcd.write_string(str(calories) + " kcal")
+            time.sleep(8)
             lock.release()
+            time.sleep(1)
 
 # HELPER FUNCTIONS
 def _get_total_calories(food:str, weight:float) -> float:
@@ -131,6 +143,7 @@ if __name__ == "__main__":
     t1.start()
     t2.start()
     t3.start()
+
     try:
         while True:
             time.sleep(.1)

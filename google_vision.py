@@ -16,6 +16,7 @@ client = vision.ImageAnnotatorClient()
 def takephoto():
     camera = picamera.PiCamera()
     camera.capture('image.jpg')
+    camera.close()
 
 def main():
     takephoto()
