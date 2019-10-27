@@ -6,7 +6,7 @@ USDA API calls
 import json
 from urllib import request, parse
 
-API_KEY = 'pbGv6UeN2LMmlpJA3IjIa9VYIs8hO8TEyGkvXbTS'
+API_KEY = ''
 
 BASE_USDA_URL = 'https://api.nal.usda.gov/fdc/v1'
 
@@ -47,12 +47,17 @@ def get_calories(search_result: dict) -> int:
 
 def get_grams(search_result: dict) -> float:
     total_grams = 0.0
-    all_foods = search_result['inputFoods']
-    for food in all_foods:
-        total_grams += food['gramWeight']
-    return total_grams
+    try:
+        all_foods = search_result['inputFoods']
+        for food in all_foods:
+            total_grams += food['gramWeight']
+        return total_grams
+    except:
+        return 0
 
 def get_calories_per_gram(search_result: dict) -> float:
     total_calories = get_calories(search_result)
     total_grams = get_grams(search_result)
+    if total_grams <= 0:
+        total_grams = 1
     return float(total_calories) / total_grams
