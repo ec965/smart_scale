@@ -1,3 +1,7 @@
+# Scale Up
+Enoch Chau and Rebecca Leung
+SD Hacks 2019
+
 # Initial Calibration
 https://tutorials-raspberrypi.com/digital-raspberry-pi-scale-weight-sensor-hx711/
 1. Using out of box scale, record the weight on an object.
@@ -31,15 +35,13 @@ Fruits: apple, banana, orange to start
 3. LCD to display weight (grams), fruit type, calories
 
 # Algorithm
+Upon button press to record Caloric data.
 1. Weight is recorded from load cell.
 2. Fruit type is recorded from google vision/pi camera.
 3. Grams per calorie is calculated using dictionary.
-4. LED blinks, LCD is updated.
+4. LLCD is updated.
 5. Calories are recorded somewhere (google sheet with iftt?)
 
 # Reach Goals
 1. Implement a database to collect caloric data.
 2. implement user facing android app or website that can record calories.
-
-Enoch Chau and Rebecca Leung
-SD Hacks 2019
