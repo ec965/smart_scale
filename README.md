@@ -1,6 +1,7 @@
 # Scale Up
 Enoch Chau and Rebecca Leung
 SD Hacks 2019
+https://devpost.com/software/scale-up
 
 # Initial Calibration
 https://tutorials-raspberrypi.com/digital-raspberry-pi-scale-weight-sensor-hx711/
