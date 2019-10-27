@@ -6,7 +6,7 @@ USDA API calls
 import json
 from urllib import request, parse
 
-API_KEY = 'pbGv6UeN2LMmlpJA3IjIa9VYIs8hO8TEyGkvXbTS'
+API_KEY = ''
 
 BASE_USDA_URL = 'https://api.nal.usda.gov/fdc/v1'
 
